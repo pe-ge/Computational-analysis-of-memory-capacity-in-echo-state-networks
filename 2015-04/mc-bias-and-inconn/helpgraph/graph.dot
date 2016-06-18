@@ -1,0 +1,42 @@
+digraph {
+	rankdir=LR;
+	{
+		rank="min";
+		u
+	}
+	u -> {x1, x2, x4}
+	subgraph cluster_1 {
+		label="reservoir"
+		rank="same";
+		style="rounded,filled";
+		x1, x3, x2, x4, x5
+		
+		x1 -> x3 -> x2 -> x4 -> x5 [style=invis]
+	}
+
+	{x1, x2} -> {x1, x2, x5}
+	{x3, x5} -> {x3, x4, x5}
+	//x4 -> x1
+
+	subgraph cluster_2 {
+		rank="same";
+		o1, o2, o3, o4
+	}
+	x1 -> {o2 o3 o4}
+	x2 -> {o1 o4}
+	x5 -> {o1 o2}
+	x4 -> o1
+
+	//u -> o1, o2, o3, o4 [style=dotted, label="?"]
+
+	x1 [label=<x<sub>1</sub>>]
+	x3 [label=<x<sub>3</sub>>]
+	x2 [label=<x<sub>2</sub>>]
+	x4 [label=<x<sub>5</sub>>]
+	x5 [label=<x<sub>4</sub>>]
+
+	o1 [label=<o<sub>4</sub>>]
+	o2 [label=<o<sub>3</sub>>]
+	o3 [label=<o<sub>1</sub>>]
+	o4 [label=<o<sub>2</sub>>]
+}

@@ -1,0 +1,8 @@
+€}q(Uplot]q(Uax2qUright_bqUmcqUfUiUleft_bqUleqUlesqUfind_left_right_boundariesq	Uxsq
+UmcsqUax1qUothsqeUemceorto]q(UtauqhULINESqUitqUWIqU
+ITERATIONSqU	last_oth3qhUWzalqU
+measure_mcqU
+measure_ogqUall_othsqUall_lesqUWUWIzalqhUlast_othqhUogqUall_mcsqUlUqU	last_oth2qUetaqUsigmaq heUlexp]q!(Uljapunov_exponentq"Umainq#eU	test_lyap]q$(UWinq%UWUxeUgerplot2]q&(Uplotq'Udrawq(Ucomputeq)Ucompute_linesq*Usave_valuesq+Uget_old_data_sizesq,Usave_basic_dataq-Uget_total_valuesq.h#U
+create_dirq/Uget_max_stdq0eUtest_mc3]q1h#aUlyapunov]q2Ulyapunov_expq3aUortho]q4(Uenergy_orthonormalq5U	norm_colsq6Ulearn_orthonormalq7Ugrad_energy_orthonormalq8Ugrad_energy_orthogonalq9Ulearn_orthogonal_revq:Uenergy_orthogonalq;Uorthogonalityq<Ulearn_orthogonalq=eU	mc6forget]q>(Umemory_capacityq?h#eUmc6]q@(h?h#eUmc3a]qA(U
+def_paramsqBh?h#eUaux]qC(UkindofvectorqDUtry_save_figqEUreadable_secondsqFeUmc5]qG(h?h#eUmc4]qH(hBUget_def_act_paramsqIUtanh_abqJh?Uqh#U
+sigmoid_abqKeUmc3]qL(hBh?h#eu.
