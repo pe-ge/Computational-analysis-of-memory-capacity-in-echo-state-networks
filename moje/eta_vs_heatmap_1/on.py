@@ -41,12 +41,15 @@ for eta_idx, eta_0 in enumerate(etas):
             WG = np.random.normal(0, sigma, [N, N])
             WI = np.random.uniform(-tau, tau, N)
 
-            eta = eta_0
+            # eta = eta_0
+            eta = 0.03
+            decay = 0.95
             for it in range(ORTHO_ITERATIONS):
                 WG = learn_orthonormal(WG, eta)
                 eta = eta * decay
 
             MCs[eta_idx, decay_idx, it_total] = measure_mc(WG, WI, False)
+            print(measure_mc(WG, WI, False))
 
 print()
 np.save('mc', MCs)
