@@ -27,7 +27,7 @@ def measure_mc(W, WI, calc_lyapunov):
 
 
 def load_data():
-    return np.load('x'), np.load('y'), np.load('z')
+    return np.load('x.npy'), np.load('y.npy'), np.load('z.npy')
 
 
 def generate_data():
@@ -54,7 +54,7 @@ def generate_data():
 
 
 def main():
-    x, y, z = generate_data()
+    x, y, z = load_data()
 
     # Fit a 3rd order, 2d polynomial
     m = polyfit2d(x, y, z)
@@ -73,7 +73,9 @@ def main():
                aspect='auto')
     m = cm.ScalarMappable(cmap=plt.get_cmap('hot'))
     m.set_array(z)
-    plt.colorbar(m, label='memory capacity', ticks=[40, 50, 60, 70, 80, 90, 100])
+    plt.colorbar(m, label='memory capacity', ticks=[30, 40, 50, 60, 70, 80, 90, 100])
+    plt.xlabel(r'$\eta$', size=24)
+    plt.ylabel(r'$\xi$', size=24)
     plt.savefig('eta_xi_mc_sampled.png')
     plt.show()
 
