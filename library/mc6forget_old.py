@@ -2,33 +2,41 @@
 # -*- coding: utf-8 -*-
 
 """
-mc5.py
+mc6.py
 Created 21.3.2015
-Based on mc3.py
+Based on mc5.py
 
 Goal: Measuring Memory Capacity of reservoirs.
 
 Changes:
-	- changed default values for iterations, iterations_skipped, iterations_coef_measure, runs
-	- added correlation coefficient correction MC <- MC - q / iterations_coef_measure
+	- removed correlation coefficient correction MC <- MC - q / iterations_coef_measure
+	- added input-to-output connections
 
 """
 
-from numpy import random, zeros, tanh, dot, linalg, corrcoef, average, std, sqrt
+from numpy import random, zeros, tanh, dot, linalg, \
+	corrcoef, average, std, sqrt, hstack
+import scipy.linalg
 
-def memory_capacity(W, WI, memory_max=None, iterations=1200, iterations_skipped=None, iterations_coef_measure=100, runs=1, input_dist=(-1., 1.), cc_correction=True):
+def memory_capacity(W, WI, memory_max=None, 
+	iterations=1200, iterations_skipped=None, iterations_coef_measure=100, 
+	runs=1, input_dist=(-1., 1.),
+	use_input=False, target_later=False):
 	"""Calculates memory capacity of a NN 
 		[given by its input weights WI and reservoir weights W].
 	W  = q x q matrix storing hidden reservoir weights
-	WI = q x p matrix storing input weights
+	WI = q x 1 vector storing input weights
 
-	Returns: a tuple (MC, std)
-	MC: memory capacity for history 0..(MEMORY_MAX - 1)
-		[a vector of length MEMORY_MAX]
-	std: standard deviation for each value of MC
+	Returns: a non-negative real number MC
+	MC: memory capacity sum for histories 1..MEMORY_MAX
 	"""
 
-	q, p = WI.shape
+	# matrix shape checks
+	if len(WI.shape) != 1:
+		raise Exception("input matrix WI must be vector-shaped!")
+	q, = WI.shape
+	if W.shape != (q, q):
+		raise Exception("W and WI matrix sizes do not match")
 
 	if memory_max is None:
 		memory_max = q
@@ -41,8 +49,11 @@ def memory_capacity(W, WI, memory_max=None, iterations=1200, iterations_skipped=
 	dist_input = lambda: random.uniform(input_dist[0], input_dist[1], iterations)
 
 	# vector initialization
-	X = zeros([q,1])	# reservoir activations, @FIXME, maybe try only q, instead of [q, 1] (performance?)
-	S = zeros([q,iterations_measured])
+	X = zeros(q)
+	if use_input:
+		S = zeros([q + 1, iterations_measured])
+	else:
+		S = zeros([q, iterations_measured])
 
 	# generate random input
 	u = dist_input() # all input; dimension: [iterations, 1]
@@ -53,18 +64,25 @@ def memory_capacity(W, WI, memory_max=None, iterations=1200, iterations_skipped=
 
 		if it >= iterations_skipped:
 			# record the state of reservoir activations X into S
-			S[:, it - iterations_skipped] = X[:,0]
+			if use_input:
+				S[:, it - iterations_skipped] = hstack([X, u[it]])
+			else:
+				S[:, it - iterations_skipped] = X
 
 	# prepare matrix D of desired values (that is, shifted inputs)
 	assert memory_max < iterations_skipped
 	D = zeros([memory_max, iterations_measured])
-
-	for h in range(memory_max): # fill each row
-		#FIXME maybe should be: 'iterations - (h+1)', it depends, whether we measure 0th iteration as well
-		D[h,:] = u[iterations_skipped - h : iterations - h] 
+	if target_later:
+		# if we allow direct input-output connections, there is no point in measuring 0-delay corr. coef. (it is always 1)
+		for h in range(memory_max):
+			D[h,:] = u[iterations_skipped - (h+1) : iterations - (h+1)] 
+	else:
+		for h in range(memory_max): 
+			D[h,:] = u[iterations_skipped - h : iterations - h] 
+	
 	
 	# calculate pseudoinverse S+ and with it, the matrix WO
-	S_PINV = linalg.pinv(S)
+	S_PINV = scipy.linalg.pinv(S)
 	WO = dot(D, S_PINV)
 
 	# do a new run for an unbiased test of quality of our newly trained WO
@@ -72,22 +90,27 @@ def memory_capacity(W, WI, memory_max=None, iterations=1200, iterations_skipped=
 	MC = zeros([runs, memory_max]) # here we store memory capacity
 	for run in range(runs):
 		u = random.uniform(input_dist[0], input_dist[1], iterations_coef_measure + memory_max)
-		X = zeros([q,1])
+		X = zeros(q)
 		o = zeros([memory_max, iterations_coef_measure]) # 200 x 1000
 		for it in range(iterations_coef_measure + memory_max):
 			X = tanh(dot(W, X) + dot(WI, u[it]))
 			if it >= memory_max:
-				# we calculate output nodes using WO  ( @FIXME maybe not a column, but a row?)
-				o[:, it - memory_max] = dot(WO, X)[:,0]
+				# we calculate output nodes using WO
+				if use_input:
+					o[:, it - memory_max] = dot(WO, hstack([X, u[it]]))
+				else:
+					o[:, it - memory_max] = dot(WO, X)
 
 		# correlate outputs with inputs (shifted)
 		for h in range(memory_max):
 			k = h + 1
-			cc = corrcoef(u[memory_max - h : memory_max + iterations_coef_measure - h], o[h, : ]) [0, 1]
+			if target_later:
+				cc = corrcoef(u[memory_max - k : memory_max + iterations_coef_measure - k], o[h, : ]) [0, 1]
+			else:
+				cc = corrcoef(u[memory_max - h : memory_max + iterations_coef_measure - h], o[h, : ]) [0, 1]
 			MC[run, h] = cc * cc
 
-	correction = (q / iterations_coef_measure) if cc_correction else 0
-	return sum(average(MC, axis=0)) - correction
+	return average(MC, axis=0)
 
 
 def main():
