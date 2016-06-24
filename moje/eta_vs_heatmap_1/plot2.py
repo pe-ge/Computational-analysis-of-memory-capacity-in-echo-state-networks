@@ -14,6 +14,11 @@ memory_max = int(N*1.2)
 ORTHO_ITERATIONS = 100
 TOTAL_ITERATIONS = 100
 
+eta_min = 0.005
+eta_max = 0.1
+xi_min = 0.85
+xi_max = 1
+
 
 def measure_mc(W, WI, calc_lyapunov):
     return memory_capacity(W, WI, memory_max=memory_max, iterations=1200,
@@ -21,19 +26,15 @@ def measure_mc(W, WI, calc_lyapunov):
                            target_later=True)
 
 
-def main():
-    # Generate Data...
-    numdata = 300
-    eta_min = 0.005
-    eta_max = 0.1
-    xi_min = 0.85
-    xi_max = 1
+def load_data():
+    return np.load('x'), np.load('y'), np.load('z')
+
+
+def generate_data():
+    numdata = 30000
     x = np.random.uniform(eta_min, eta_max, numdata)
     y = np.random.uniform(xi_min, xi_max, numdata)
     z = np.zeros(numdata)
-    np.save('x', x)
-    np.save('y', y)
-    np.save('z', z)
     for i in range(numdata):
         eta = x[i]
         decay = y[i]
@@ -44,8 +45,16 @@ def main():
             WG = learn_orthonormal(WG, eta)
             eta = eta * decay
 
-        z[i] = measure_mc(WG, WI, False)
+        z[i], _ = measure_mc(WG, WI, False)
+    np.save('x', x)
+    np.save('y', y)
+    np.save('z', z)
     print(z)
+    return x, y, z
+
+
+def main():
+    x, y, z = generate_data()
 
     # Fit a 3rd order, 2d polynomial
     m = polyfit2d(x, y, z)
