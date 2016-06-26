@@ -28,6 +28,11 @@ def measure_mc(W, WI, calc_lyapunov):
 
 def load_data():
     return np.load('x.npy'), np.load('y.npy'), np.load('z.npy')
+    mc = np.load('mc50.npy')
+    smoothness = 100
+    x = np.linspace(0.005, 0.1, smoothness)
+    y = np.linspace(0.85, 1, smoothness)
+    return x, y, np.mean(mc, axis=2)
 
 
 def generate_data():
@@ -55,6 +60,7 @@ def generate_data():
 
 def main():
     x, y, z = load_data()
+    print(z.shape)
 
     # Fit a 3rd order, 2d polynomial
     m = polyfit2d(x, y, z)
