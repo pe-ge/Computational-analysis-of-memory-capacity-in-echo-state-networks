@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 data = np.array(pickle.load(open('collect-rhos/data0.pickle', 'rb')))
+fig = plt.figure(figsize=(8, 6.5))
 
 x = np.linspace(0.8, 1.10, 20)
 lines = data[5, :, :].transpose()
