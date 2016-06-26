@@ -49,7 +49,8 @@ e = eta
 for iteration in range(1, ITERATIONS + 1):
     print(iteration)
     # W = learn_orthogonal(W, eta)
-    W = learn_orthogonal(W, e)
+    W = learn_orthonormal(W, e)
     set_spectral_angles(spectral_angles, iteration, W)
+    e = e * 0.95
 
 np.save('spectral_angles', spectral_angles)
