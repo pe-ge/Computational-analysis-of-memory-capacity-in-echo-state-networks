@@ -9,7 +9,7 @@ from library.mc6 import memory_capacity
 sigma = 0.092
 tau = 0.01
 N = 100
-eta = 3*10**-2
+eta = 7*10**-2
 
 ITERATIONS = 100
 
@@ -51,6 +51,6 @@ for iteration in range(1, ITERATIONS + 1):
     # W = learn_orthogonal(W, eta)
     W = learn_orthonormal(W, e)
     set_spectral_angles(spectral_angles, iteration, W)
-    e = e * 0.95
+    e = e * 0.9
 
 np.save('spectral_angles', spectral_angles)

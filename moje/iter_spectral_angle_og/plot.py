@@ -4,7 +4,7 @@ import matplotlib
 
 spectral_angles = np.load('spectral_angles.npy')
 
-fig = plt.figure(figsize=(8, 6.5))
+fig = plt.figure(figsize=(8.5, 6.5))
 plt.xlabel('iteration', size=24)
 plt.ylabel('spectral angle', size=24)
 plt.title('OG method', size=24)
