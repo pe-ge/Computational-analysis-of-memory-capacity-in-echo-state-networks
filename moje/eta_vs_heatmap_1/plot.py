@@ -15,7 +15,7 @@ xi_min = 0.85
 xi_max = 1
 
 fig = plt.figure(figsize=(8, 6.5))
-plt.xlabel(r'$\eta$', size=24)
+plt.xlabel(r'$\eta_0$', size=24)
 plt.ylabel(r'$\xi$', size=24)
 
 plt.imshow(heatmap,
