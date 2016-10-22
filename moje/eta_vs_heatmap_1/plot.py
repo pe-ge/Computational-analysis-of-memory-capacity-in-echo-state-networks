@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+from library.aux import try_save_fig
 
 data = np.load('mc50.npy')
 heatmap = np.mean(data, axis=2)
@@ -28,6 +29,6 @@ plt.colorbar(label='memory capacity', ticks=[40, 50, 60, 70, 80, 90, 100])
 matplotlib.rcParams.update({'font.size': 18})
 # plt.colorbar()
 
-plt.savefig('eta_xi_mc.png')
+try_save_fig('eta_xi_mc.png', ext="pdf")
 
 plt.show()
