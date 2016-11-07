@@ -41,6 +41,7 @@ for l in range(LINES):
     WI = random.uniform(-tau, tau, q)
 
     mc, le = measure_mc(W, WI)
+    print(le)
     og = measure_og(W)
 
     OTHS[l, 0] = og
