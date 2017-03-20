@@ -6,11 +6,11 @@ reservoir_sizes = list(range(100, 1000 + 1, 100))
 taus = [10**-i for i in range(20)]
 
 mc_mean = np.load('mcm.npy')
-# mc_mean[4, 9] = 479
 mc_std = np.load('mcs.npy')
 
+print(mc_mean)
+
 def replot():
-    plt.figure(figsize=(8, 8))
     ax = plt.subplot(1,1,1)
     # res_size vs mc
 
@@ -27,8 +27,7 @@ def replot():
     ax.legend(handles[::-1], labels[::-1], loc=2)
     plt.xlabel("reservoir size")
 
-    try_save_fig("figures/figure")
-    try_save_fig("figures/figure", ext="pdf")
+    plt.savefig('ON_N_tau_vs_MC.png')
     plt.show()
 
 replot()

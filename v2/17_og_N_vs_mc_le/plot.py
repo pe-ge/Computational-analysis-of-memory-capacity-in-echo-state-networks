@@ -44,9 +44,9 @@ def replot():
     plt.grid(True)
     ax2.legend(loc=4)
     plt.xlim([9,101])
+    plt.ylim([-0.2, 0.0])
 
-    try_save_fig("figures/figure")
-    try_save_fig("figures/figure", ext="pdf")
+    plt.savefig('before-after-og.png')
     plt.show()
 
 replot()
