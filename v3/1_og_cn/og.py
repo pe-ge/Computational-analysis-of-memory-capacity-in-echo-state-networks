@@ -4,8 +4,9 @@ import numpy as np
 from numpy import random
 from numpy.linalg import cond
 from scipy.linalg import pinv
+from math import inf
 
-INSTANCES = 5
+INSTANCES = 10
 ORTHO_ITERS = 50
 
 RHO = 0.95
@@ -65,30 +66,23 @@ def mc(WI, W, iters_skip, iters_train, iters_test):
     return np.sum(mc)
 
 
-def pinv_acts(WI, W, iters_skip, iters_train, iters_test):
-    # num output neurons
+def pinv_acts(WI, W, iters_skip, iters_pinv):
+    # num reservoir neurons
     N = WI.shape[0]
-    L = N
-    total_its = iters_skip + iters_train + iters_test
 
-    # input
-    u = np.random.uniform(-1.0, 1.0, total_its)
-    # desired outputs
-    D = np.zeros([L, iters_train])
     # reservoir activations
     X = np.zeros(N)
     # history of reservoir activations
-    Xs = np.zeros([N, iters_train])
+    Xs = np.zeros([N, iters_pinv])
 
     # skipping (getting rid of transients)
     for it in range(iters_skip):
-        X = np.tanh(np.dot(W, X) + np.dot(WI, u[it]))
+        X = np.tanh(np.dot(W, X) + np.dot(WI, random.uniform(-1.0, 1.0)))
 
     # training
-    for it in range(iters_train):
-        X = np.tanh(np.dot(W, X) + np.dot(WI, u[iters_skip + it]))
+    for it in range(iters_pinv):
+        X = np.tanh(np.dot(W, X) + np.dot(WI, random.uniform(-1.0, 1.0)))
         Xs[:, it] = X
-        D[:, it] = u[iters_skip + it:it:-1]
 
     # calculate output weights
     return pinv(Xs)
@@ -101,7 +95,8 @@ for N_idx, N in enumerate(RES_SIZES):
         W = W * (RHO / np.max(np.abs(np.linalg.eig(W)[0])))
         WI = random.uniform(-TAU, TAU, N)
 
-        cond_before[N_idx, inst_idx] = cond(pinv_acts(WI, W, iters_skip=N, iters_train=10*N, iters_test=1000))
+        acts = pinv_acts(WI, W, iters_skip=N, iters_pinv=10*N)
+        cond_before[N_idx, inst_idx] = cond(acts)
 
         # eta = ETA_0
         eta = ETA
@@ -110,10 +105,8 @@ for N_idx, N in enumerate(RES_SIZES):
             # W = learn_orthonormal(W, eta)
             # eta = eta * 0.9
 
-        cond_after[N_idx, inst_idx] = cond(pinv_acts(WI, W, iters_skip=N, iters_train=10*N, iters_test=1000))
-
-        print('before: {}'.format(cond_before[N_idx, inst_idx]))
-        print('after: {}'.format(cond_after[N_idx, inst_idx]))
+        acts = pinv_acts(WI, W, iters_skip=N, iters_pinv=10*N)
+        cond_after[N_idx, inst_idx] = cond(acts)
 
     np.save('cond_before', cond_before)
     np.save('cond_after', cond_after)
