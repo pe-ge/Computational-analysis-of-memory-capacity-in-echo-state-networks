@@ -5,7 +5,7 @@ from scipy.linalg import pinv
 from numpy import random
 
 INSTANCES = 10
-ORTHO_ITERS = 20
+ORTHO_ITERS = 10
 
 RHO = 0.95
 TAU = 10**-10
@@ -61,7 +61,7 @@ smoothness = 20
 etas = np.linspace(0.005, 0.1, smoothness)
 xis = np.linspace(0.9, 1.0, smoothness)
 
-MCs = np.zeros([smoothness, smoothness, INSTANCES])
+MCs = np.ndarray([smoothness, smoothness, INSTANCES])
 for eta_idx, eta_0 in enumerate(etas):
     for xi_idx, xi in enumerate(xis):
         print(eta_0, xi)
@@ -76,6 +76,6 @@ for eta_idx, eta_0 in enumerate(etas):
                 W = learn_orthonormal(W, eta)
                 eta = eta * xi
 
-            MCs[eta_idx, inst] = mc(WI, W, iters_skip=N, iters_train=10*N, iters_test=1000)
+            MCs[eta_idx, xi_idx, inst] = mc(WI, W, iters_skip=N, iters_train=10*N, iters_test=1000)
 
 np.save('mc', MCs)
