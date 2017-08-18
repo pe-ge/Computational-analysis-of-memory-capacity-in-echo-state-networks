@@ -63,6 +63,7 @@ def train_model(N, eta):
     mc_max = -inf
     opt_iters = 0
 
+    W = learn_orthogonal(W, eta)
     while True:
         W = learn_orthogonal(W, eta)
         last_mc = mc(WI, W, iters_skip=N, iters_train=10*N, iters_test=1000)
