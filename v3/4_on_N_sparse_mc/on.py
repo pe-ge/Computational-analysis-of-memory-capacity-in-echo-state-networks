@@ -66,6 +66,7 @@ def train_model(N, sparsity):
         for j in range(N):
             if i != j and random.random() < sparsity:
                 W[i, j] = 0.0
+    W = W * (RHO / np.max(np.abs(np.linalg.eig(W)[0])))
 
     mc_max = -inf
 
@@ -89,6 +90,6 @@ for N_idx, N in enumerate(Ns):
     for spars_idx, sparsity in enumerate(sparsities):
         for inst in range(INSTANCES):
             print(N, sparsity, inst)
-            best_mc = train_model(N, eta)
+            best_mc = train_model(N, sparsity)
             mcs[N_idx, spars_idx, inst] = best_mc
             np.save('mcs', mcs)

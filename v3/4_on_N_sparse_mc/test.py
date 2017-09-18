@@ -5,8 +5,6 @@ from scipy.linalg import pinv
 from numpy import random
 from math import inf
 
-INSTANCES = 10
-
 RHO = 0.95
 TAU = 10**-10
 eta = 6*10**-2
@@ -62,6 +60,7 @@ def train_model(N, sparsity):
     WI = random.uniform(-TAU, TAU, N)
 
     # make sparse
+    bef = np.count_nonzero(W)
     for i in range(N):
         for j in range(N):
             if i != j and random.random() < sparsity:
@@ -70,10 +69,20 @@ def train_model(N, sparsity):
 
     mc_max = -inf
 
+    af = np.count_nonzero(W)
+    print('sparsity', 1.0 - af/bef)
+
+    # W = learn_orthonormal(W, eta)
     W = learn_orthogonal(W, eta)
+    af = np.count_nonzero(W)
+    print('sparsity', 1.0 - af/bef)
     while True:
+        # W = learn_orthonormal(W, eta)
         W = learn_orthogonal(W, eta)
+        af = np.count_nonzero(W)
+        print('sparsity', 1.0 - af/bef)
         last_mc = mc(WI, W, iters_skip=N, iters_train=10*N, iters_test=1000)
+        print(last_mc)
         if mc_max < last_mc:
             mc_max = last_mc
 
@@ -81,15 +90,7 @@ def train_model(N, sparsity):
             return mc_max
 
 
-Ns = np.arange(100, 1001, 100)
-sparsities = [0, 0.5, 0.9, 0.93, 0.96, 0.99]
+N = 1000
+sparsity = 0.99
 
-mcs = np.zeros([len(Ns), len(sparsities), INSTANCES])
-
-for N_idx, N in enumerate(Ns):
-    for spars_idx, sparsity in enumerate(sparsities):
-        for inst in range(INSTANCES):
-            print(N, sparsity, inst)
-            best_mc = train_model(N, eta)
-            mcs[N_idx, spars_idx, inst] = best_mc
-            np.save('mcs', mcs)
+best_mc = train_model(N, sparsity)
